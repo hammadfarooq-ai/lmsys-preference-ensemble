@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.npy
+*.parquet
+submission.csv
+.ipynb_checkpoints/
+.venv/
+.env
+kaggle.json

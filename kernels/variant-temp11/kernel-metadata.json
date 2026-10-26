@@ -1,0 +1,27 @@
+{
+  "id": "YOUR_KAGGLE_USERNAME/lmsys-variant-temp11",
+  "title": "LMSYS Variant Temp11",
+  "code_file": "notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [
+    "YOUR_KAGGLE_USERNAME/lmsys-boosted-ensemble-script",
+    "tascj0/lmsys-checkpoints-0-0805",
+    "tascj0/lmsys-checkpoints-3-0805",
+    "tascj0/lmsys-modules-0805",
+    "tascj0/lmsys-packages"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "llm-classification-finetuning"
+  ],
+  "model_sources": [],
+  "machine_shape": "NvidiaTeslaT4"
+}
