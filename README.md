@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Kaggle](https://img.shields.io/badge/Kaggle-LLM%20Classification%20Finetuning-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/competitions/llm-classification-finetuning)
-[![Public LB](https://img.shields.io/badge/Public%20log%20loss-0.83015-brightgreen)](#results)
+[![Public LB](https://img.shields.io/badge/Public%20log%20loss-0.82841-brightgreen)](#results)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
@@ -76,9 +76,12 @@ sequenceDiagram
 │   ├── variant-geo/                # experiment: geometric-mean pooling
 │   ├── variant-temp11/             # experiment: temperature 1.1 on final probabilities
 │   ├── variant-geo-t095/           # experiment: geometric pooling + temperature 0.95
-│   └── variant-geo-t090/           # experiment: geometric pooling + temperature 0.90
+│   ├── variant-geo-t090/           # experiment: geometric pooling + temperature 0.90
+│   ├── variant-t090-gemma65/       # experiment: T 0.90 with Gemma weight 0.65
+│   └── variant-t090-tie106/        # experiment: T 0.90 with tie probability x1.06
 ├── scripts/
-│   └── analyze_validation.py       # log loss of the probe's saved probabilities
+│   ├── analyze_validation.py       # log loss of the probe's saved probabilities
+│   └── make_variant.py             # generate a Kaggle notebook for any pool/temperature/weight/tie variant
 ├── LICENSE
 └── README.md
 ```
@@ -147,12 +150,14 @@ and `charts/dashboard.png` (nine diagnostic panels).
 | Gemma2-9B + Llama3-8B, time-aware swap-TTA | **0.83040** |
 | `variant-geo` (geometric-mean pooling) | **0.83015** |
 | `variant-temp11` (temperature 1.1, softer) | 0.83457 |
-| `variant-geo-t095` (geometric pooling, temperature 0.95) | pending |
-| `variant-geo-t090` (geometric pooling, temperature 0.90) | pending |
+| `variant-geo-t090` (geometric pooling, temperature 0.90) | **0.82841** |
+| `variant-geo-t095` (geometric pooling, temperature 0.95) | 0.82863 |
+| `variant-t090-gemma65` (T 0.90, Gemma weight 0.65) | pending |
+| `variant-t090-tie106` (T 0.90, tie probability x1.06) | pending |
 
 Notes from the experiments:
 
-- Softening the probabilities (temperature 1.1) made the score worse, which suggests the ensemble is slightly under-confident, so the next experiments sharpen instead.
+- Softening the probabilities (temperature 1.1) made the score worse, which suggests the ensemble is slightly under-confident, so sharpening (temperature < 1) helps. Fitting a parabola through the three geo-pool points puts the optimum near T = 0.92, so the temperature is almost exhausted and the next experiments change one other knob at a time (blend weight, tie scale).
 - On the full test set, one Gemma pass takes roughly 3.5 h and one Llama pass roughly 2.5 h, so all four passes do not fit in the 9 h limit. The scheduler skips the optional passes that do not fit.
 - On 3,000 train rows the models score 0.69 (Gemma) and 0.59 (Llama) log loss. These checkpoints were trained on `train.csv`, so this is optimistic and **not** suitable for tuning blend weights.
 
