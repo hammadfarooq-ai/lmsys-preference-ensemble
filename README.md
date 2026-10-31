@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Kaggle](https://img.shields.io/badge/Kaggle-LLM%20Classification%20Finetuning-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/competitions/llm-classification-finetuning)
-[![Public LB](https://img.shields.io/badge/Public%20log%20loss-0.83040-brightgreen)](#results)
+[![Public LB](https://img.shields.io/badge/Public%20log%20loss-0.83015-brightgreen)](#results)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
@@ -74,7 +74,9 @@ sequenceDiagram
 │   ├── baseline/                   # runs the pipeline as-is
 │   ├── validation-probe/           # scores 3,000 labelled train rows, saves probabilities
 │   ├── variant-geo/                # experiment: geometric-mean pooling
-│   └── variant-temp11/             # experiment: temperature 1.1 on final probabilities
+│   ├── variant-temp11/             # experiment: temperature 1.1 on final probabilities
+│   ├── variant-geo-t095/           # experiment: geometric pooling + temperature 0.95
+│   └── variant-geo-t090/           # experiment: geometric pooling + temperature 0.90
 ├── scripts/
 │   └── analyze_validation.py       # log loss of the probe's saved probabilities
 ├── LICENSE
@@ -143,11 +145,14 @@ and `charts/dashboard.png` (nine diagnostic panels).
 | Submission | Public log loss |
 |---|---|
 | Gemma2-9B + Llama3-8B, time-aware swap-TTA | **0.83040** |
-| `variant-temp11` (temperature 1.1) | pending |
-| `variant-geo` (geometric pooling) | pending |
+| `variant-geo` (geometric-mean pooling) | **0.83015** |
+| `variant-temp11` (temperature 1.1, softer) | 0.83457 |
+| `variant-geo-t095` (geometric pooling, temperature 0.95) | pending |
+| `variant-geo-t090` (geometric pooling, temperature 0.90) | pending |
 
 Notes from the experiments:
 
+- Softening the probabilities (temperature 1.1) made the score worse, which suggests the ensemble is slightly under-confident, so the next experiments sharpen instead.
 - On the full test set, one Gemma pass takes roughly 3.5 h and one Llama pass roughly 2.5 h, so all four passes do not fit in the 9 h limit. The scheduler skips the optional passes that do not fit.
 - On 3,000 train rows the models score 0.69 (Gemma) and 0.59 (Llama) log loss. These checkpoints were trained on `train.csv`, so this is optimistic and **not** suitable for tuning blend weights.
 
